@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1724">
+<title>משימות ARC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap">
+<style>
+  :root{
+    --bg:#f3f5f8; --panel:#ffffff; --panel-2:#eef1f5; --ink:#162030; --muted:#5b6778; --line:#dfe4ea;
+    --accent:#3b82f6; --accent-ink:#ffffff;
+    --urgent:#c0392b; --high:#c56a10; --done:#23804c;
+    --shadow:0 1px 2px rgba(20,30,50,.06),0 4px 14px rgba(20,30,50,.05);
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0c121c; --panel:#141c28; --panel-2:#101823; --ink:#e7ecf3; --muted:#93a0b2; --line:#243041;
+    --accent:#4f8ff7; --accent-ink:#ffffff;
+    --urgent:#f87171; --high:#fb923c; --done:#4ade80;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 18px rgba(0,0,0,.35);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0c121c; --panel:#141c28; --panel-2:#101823; --ink:#e7ecf3; --muted:#93a0b2; --line:#243041;
+    --accent:#4f8ff7; --accent-ink:#ffffff;
+    --urgent:#f87171; --high:#fb923c; --done:#4ade80;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 18px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Heebo",system-ui,"Segoe UI",Arial,sans-serif;direction:rtl}
+  .wrap{max-width:920px;margin:0 auto;padding:18px 16px 70px}
+  button{font-family:inherit}
+
+  header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .logo{width:38px;height:38px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:900;font-size:13px;flex:none;letter-spacing:.02em}
+  h1{font-size:20px;font-weight:800;margin:0;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13px;margin:2px 0 0;font-variant-numeric:tabular-nums}
+  .tools{display:flex;flex-wrap:wrap;gap:8px}
+  .btn{cursor:pointer;font-weight:700;font-size:13.5px;border-radius:9px;padding:8px 14px;border:1px solid var(--line);background:var(--panel);color:var(--ink);white-space:nowrap}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .btn:focus-visible,.input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn[disabled]{opacity:.55;cursor:default}
+
+  .status{font-size:12.5px;color:var(--muted);margin:-6px 0 14px;min-height:18px}
+  .status.err{color:var(--urgent);font-weight:700}
+
+  /* אדם */
+  .person{margin-top:26px}
+  .person:first-child{margin-top:4px}
+  .person-name{font-size:24px;font-weight:800;line-height:1.25;margin:0 0 12px;padding:10px 16px;border-radius:12px;
+       display:flex;align-items:center;gap:12px;background:var(--band);color:#0b1422}
+  .person-count{font-size:15px;font-weight:900;background:rgba(11,20,34,.16);border:1px solid rgba(11,20,34,.25);border-radius:999px;padding:2px 13px;font-variant-numeric:tabular-nums}
+
+  /* כרטיס */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:9px;
+        border-inline-start:4px solid var(--band,var(--line));box-shadow:var(--shadow)}
+  .card.u-high{border-inline-start-color:var(--high)}
+  .card.u-urgent{border-inline-start-color:var(--urgent)}
+  .card-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .tid{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--muted);direction:ltr}
+  .type{font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 9px;border:1px solid var(--line);color:var(--muted)}
+  .type.t-R{border-color:#a78bfa;color:#a78bfa}
+  .type.t-M{border-color:#38bdf8;color:#38bdf8}
+  .t{font-size:14.5px;font-weight:600;line-height:1.5;margin:0 0 6px}
+  .meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .meta .urg-high{color:var(--high);font-weight:800}
+  .meta .urg-urgent{color:var(--urgent);font-weight:800}
+  .note-item{font-size:13px;line-height:1.45;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin-top:7px}
+
+  .log{margin-top:40px;padding-top:10px;border-top:1px dashed var(--line)}
+  .log-head{font-size:19px;font-weight:800;margin:8px 0 14px}
+  .log .card{opacity:.8}
+  .log .t{text-decoration:line-through;text-decoration-thickness:1px}
+  .empty{color:var(--muted);font-size:13px;padding:14px 6px}
+
+  /* חלונות */
+  .modal{position:fixed;inset:0;background:rgba(5,10,18,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+  .modal.open{display:flex}
+  .sheet{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:14px;width:min(760px,100%);max-height:92vh;display:flex;flex-direction:column;gap:12px;padding:16px;box-shadow:var(--shadow)}
+  .sheet h2{font-size:17px;margin:0}
+  .sheet p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+  .input{width:100%;font-family:inherit;font-size:14px;padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink)}
+  textarea.input{flex:1;min-height:320px;resize:vertical;line-height:1.55;font-size:13.5px}
+  .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start}
+  label.lbl{font-size:13px;font-weight:700;display:block;margin-bottom:4px}
+
+  .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-size:13px;font-weight:700;
+         padding:9px 16px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+  .toast.show{opacity:.95}
+  @media (prefers-reduced-motion:reduce){.toast{transition:none}}
+  @media (max-width:560px){.person-name{font-size:20px}.btn{padding:8px 11px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="logo">ARC</div>
+      <div><h1>משימות ARC</h1><p class="sub" id="sub">לוח כולל</p></div>
+    </div>
+    <div class="tools">
+      <button class="btn primary" id="btnRefresh" type="button">🔄 ריענון</button>
+      <button class="btn" id="btnExport" type="button">📋 טקסט לוואטסאפ</button>
+      <button class="btn" id="btnOpen" type="button">↗ פתח את הגיליון</button>
+      <button class="btn" id="btnSettings" type="button">⚙️ חיבור לגיליון</button>
+    </div>
+  </header>
+  <div class="status" id="status"></div>
+  <div id="content"></div>
+</div>
+
+<!-- חיבור לגיליון -->
+<div class="modal" id="mSettings" role="dialog" aria-modal="true" aria-labelledby="hSettings">
+  <div class="sheet">
+    <h2 id="hSettings">חיבור לגיליון Google</h2>
+    <p>מדביקים את הקישור לגיליון המשימות (כמו שהוא מופיע בשורת הכתובת בדפדפן). אם הקישור כולל <b>gid</b>, הדף יקרא בדיוק את הלשונית הזו. אחרת הוא יקרא את הלשונית לפי השם שכתוב למטה. הקישור נשמר רק בדפדפן הזה.</p>
+    <div><label class="lbl" for="inUrl">קישור לגיליון</label><input class="input" id="inUrl" type="url" dir="ltr" placeholder="https://docs.google.com/spreadsheets/d/…/edit"></div>
+    <div><label class="lbl" for="inTab">שם הלשונית</label><input class="input" id="inTab" type="text" placeholder="משימות שוטפות כולל טיקט"></div>
+    <p>הגיליון צריך להיות משותף לפחות ב"כל מי שיש לו הקישור יכול לצפות".</p>
+    <div class="row"><button class="btn primary" id="btnSave" type="button">שמור וטען</button><button class="btn" data-close type="button">ביטול</button></div>
+  </div>
+</div>
+
+<!-- טקסט לוואטסאפ -->
+<div class="modal" id="mExport" role="dialog" aria-modal="true" aria-labelledby="hExport">
+  <div class="sheet">
+    <h2 id="hExport">טקסט לוואטסאפ</h2>
+    <p>כל המשימות הפתוחות, מחולקות לפי אחראי. אפשר לערוך כאן לפני ההעתקה.</p>
+    <textarea class="input" id="exportText" spellcheck="false"></textarea>
+    <div class="row">
+      <button class="btn primary" id="btnCopy" type="button">העתק</button>
+      <button class="btn" id="btnDownload" type="button">הורד קובץ טקסט</button>
+      <button class="btn" data-close type="button">סגור</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+const DEFAULT_TAB='משימות שוטפות כולל טיקט';
+const KEY='arc-tasks-sheet';
+const $=(id)=>document.getElementById(id);
+const contentEl=$('content'), statusEl=$('status'), subEl=$('sub');
+
+/* ---------- הגדרות (נשמרות בדפדפן בלבד) ---------- */
+function loadCfg(){try{return JSON.parse(localStorage.getItem(KEY)||'null')||{};}catch(e){return {};}}
+function saveCfg(c){try{localStorage.setItem(KEY,JSON.stringify(c));}catch(e){}}
+let cfg=loadCfg();
+// אפשר גם לפתוח עם ?sheet=<קישור> — שימושי במחשב חדש
+(function(){const q=new URLSearchParams(location.search).get('sheet');if(q){const p=parseUrl(q);if(p.id){cfg=Object.assign({},cfg,p,{url:q});saveCfg(cfg);}}})();
+function parseUrl(u){
+  const s=String(u||'').trim();
+  const m=/\/spreadsheets\/d\/([A-Za-z0-9_-]{20,})/.exec(s)||/^([A-Za-z0-9_-]{30,})$/.exec(s);
+  const g=/[#&?]gid=(\d+)/.exec(s);
+  return {id:m?m[1]:'',gid:g?g[1]:''};
+}
+
+/* ---------- עזר ---------- */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('show'),1600);}
+function setStatus(t,err){statusEl.textContent=t;statusEl.classList.toggle('err',!!err);}
+function today(){const d=new Date();return d.getDate()+'.'+(d.getMonth()+1);}
+function shortDate(s){const m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String(s||''));return m?(+m[1])+'.'+(+m[2]):String(s||'');}
+
+/* ---------- אחראים: איחוד כתיבים ---------- */
+const ALIASES=[
+  ['אלירן סבג',/^אלירן( סבג)?$/],
+  ['אלכסנדר ביילין',/^(אלכסנדר|אלכס)? ?בי?ילין$/],
+  ['כורש חרות',/^כורש( חרות)?$/],
+  ['יוסי הינה',/^יוסי הי?ינה$/],
+  ['עמית באקשי',/^עמית בא?קשי$/],
+  ['איציק ערן לוי',/^איציק( ערן לוי)?$/],
+];
+function ownerName(raw){
+  const s=String(raw||'').trim().replace(/\s+/g,' ');
+  if(!s)return 'כללי';
+  for(const [name,re] of ALIASES) if(re.test(s)) return name;
+  return s;
+}
+const MENTION={'אלירן סבג':'@אלירן סבג','אליס':'@alice','כללי':'כללי'};
+const BAND={'אלירן סבג':'#fb923c','אליס':'#22d3ee','יונתן':'#a78bfa','כללי':'#94a3b8'};
+const PALETTE=['#4ade80','#facc15','#f472b6','#60a5fa','#34d399','#fbbf24','#c084fc','#f87171','#2dd4bf','#a3e635'];
+const FIRST=['אלירן סבג','כללי','אליס'];
+
+/* ---------- טעינה מהגיליון (JSONP — עובד גם מקובץ מקומי) ---------- */
+let tasks=[], loading=false, seq=0;
+function load(){
+  if(!cfg.id){openSettings();setStatus('צריך לחבר גיליון: לחצו "חיבור לגיליון" והדביקו את הקישור.',true);return;}
+  if(loading)return; loading=true; $('btnRefresh').disabled=true; setStatus('טוען מהגיליון…');
+  const n=++seq, cb='__arcCb'+n;
+  const sel=cfg.gid?('gid='+encodeURIComponent(cfg.gid)):('sheet='+encodeURIComponent(cfg.tab||DEFAULT_TAB));
+  const src='https://docs.google.com/spreadsheets/d/'+encodeURIComponent(cfg.id)+'/gviz/tq?tqx=responseHandler:'+cb+'&headers=1&'+sel+'&_='+Date.now();
+  const sc=document.createElement('script');
+  const done=(ok,msg)=>{loading=false;$('btnRefresh').disabled=false;try{delete window[cb];}catch(e){window[cb]=undefined;}sc.remove();if(!ok)setStatus(msg,true);};
+  const timer=setTimeout(()=>done(false,'הגיליון לא ענה. בדקו את החיבור לאינטרנט ואת הקישור, ונסו שוב.'),20000);
+  window[cb]=(resp)=>{
+    clearTimeout(timer);
+    if(!resp||resp.status!=='ok'){
+      const why=resp&&resp.errors&&resp.errors[0]?(resp.errors[0].detailed_message||resp.errors[0].message):'';
+      done(false,'הגיליון החזיר שגיאה'+(why?': '+why:'')+'. בדקו את הקישור ואת שם הלשונית.');return;
+    }
+    try{tasks=parse(resp.table);render();const t=new Date();setStatus('עודכן מהגיליון ב-'+t.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',second:'2-digit'}));done(true);}
+    catch(e){done(false,'לא הצלחתי לקרוא את הטבלה: '+e.message);}
+  };
+  sc.onerror=()=>{clearTimeout(timer);done(false,'אין גישה לגיליון. ודאו שהוא משותף ב"כל מי שיש לו הקישור" ושהקישור נכון.');};
+  sc.src=src; document.head.appendChild(sc);
+}
+
+function parse(table){
+  const cols=(table.cols||[]).map(c=>String(c.label||'').trim());
+  const idx=(name,fb)=>{const i=cols.indexOf(name);return i>-1?i:fb;};
+  const I={id:idx('טיקט',0),type:idx('סוג',1),date:idx('תאריך',2),text:idx('פירוט',3),owner:idx('אחראי',4),due:idx('תג"ב',5),urg:idx('דחיפות',6),status:idx('סטטוס',7),notes:idx('הערות',8)};
+  const cell=(r,i)=>{const c=r.c&&r.c[i];if(!c)return '';return String(c.f!=null?c.f:(c.v!=null?c.v:'')).trim();};
+  const out=[];
+  for(const r of table.rows||[]){
+    const id=cell(r,I.id), text=cell(r,I.text);
+    if(!id&&!text)continue;
+    if(id==='טיקט'||text==='פירוט')continue; // שורת כותרת כפולה
+    const m=/^ARC-(\d+)([TRM])$/i.exec(id);
+    const typeRaw=cell(r,I.type);
+    const kind=m?m[2].toUpperCase():(typeRaw==='תזכורת'?'R':typeRaw==='פגישה'?'M':'T');
+    out.push({id,num:m?+m[1]:1e9,kind,typeLabel:typeRaw||({T:'משימה',R:'תזכורת',M:'פגישה'})[kind],date:cell(r,I.date),text,
+      owner:ownerName(cell(r,I.owner)),due:cell(r,I.due),urg:cell(r,I.urg),status:cell(r,I.status),notes:cell(r,I.notes)});
+  }
+  return out;
+}
+const isDone=(t)=>/^(בוצע|הושלם|סגור|בוטל)$/.test(t.status);
+
+/* ---------- סדר אחראים ---------- */
+function groupOpen(){
+  const open=tasks.filter(t=>!isDone(t));
+  const map=new Map();
+  for(const t of open){if(!map.has(t.owner))map.set(t.owner,[]);map.get(t.owner).push(t);}
+  for(const list of map.values())list.sort((a,b)=>a.num-b.num||a.id.localeCompare(b.id));
+  const names=[...map.keys()].sort((a,b)=>{
+    const fa=FIRST.indexOf(a),fb=FIRST.indexOf(b);
+    if(fa>-1||fb>-1)return (fa>-1?fa:99)-(fb>-1?fb:99);
+    return map.get(b).length-map.get(a).length||a.localeCompare(b,'he');
+  });
+  return {open,map,names};
+}
+function bandOf(name,i){return BAND[name]||PALETTE[i%PALETTE.length];}
+
+/* ---------- תצוגה ---------- */
+function urgClass(u){return /דחוף/.test(u)?'urgent':(/גבוה/.test(u)?'high':'');}
+function card(t){
+  const u=urgClass(t.urg);
+  const meta=[
+    t.date?'🗓️ '+esc(shortDate(t.date)):'',
+    t.due?'⏳ תג"ב '+esc(shortDate(t.due)):'',
+    u?'<span class="urg-'+u+'">'+(u==='urgent'?'🔴 ':'🟠 ')+esc(t.urg)+'</span>':(t.urg?esc(t.urg):''),
+    isDone(t)?'✓ '+esc(t.status):''
+  ].filter(Boolean).join('');
+  return '<div class="card'+(u&&!isDone(t)?' u-'+u:'')+'">'+
+    '<div class="card-head"><span class="tid">'+esc(t.id)+'</span><span class="type t-'+t.kind+'">'+esc(t.typeLabel)+'</span></div>'+
+    '<p class="t">'+esc(t.text)+'</p>'+
+    (meta?'<div class="meta">'+meta+'</div>':'')+
+    (t.notes?'<div class="note-item">📝 '+esc(t.notes)+'</div>':'')+
+  '</div>';
+}
+function render(){
+  const {open,map,names}=groupOpen();
+  const done=tasks.filter(isDone).sort((a,b)=>b.num-a.num);
+  subEl.textContent='לוח כולל · '+open.length+' פתוחות · '+done.length+' בוצעו';
+  const people=names.map((name,i)=>{
+    const list=map.get(name);
+    return '<section class="person" style="--band:'+bandOf(name,i)+'">'+
+      '<h3 class="person-name">👤 '+esc(name)+' <span class="person-count">'+list.length+'</span></h3>'+
+      list.map(card).join('')+'</section>';
+  }).join('');
+  const log='<section class="log"><h3 class="log-head">🗂️ בוצעו · '+done.length+'</h3>'+
+    (done.length?done.map(card).join(''):'<div class="empty">אין משימות שסומנו "בוצע"</div>')+'</section>';
+  contentEl.innerHTML=(people||'<div class="empty">אין משימות פתוחות</div>')+log;
+}
+
+/* ---------- טקסט לוואטסאפ ---------- */
+const DATED=/^\d{1,2}\.\d{1,2}(\s*[-–]\s*\d{1,2}\.\d{1,2})?:/;
+function buildText(){
+  const {map,names}=groupOpen();
+  const line=(t)=>t.id+' '+t.text;
+  const L=['עדכון משימות: '+today(),'T = משימה · R = תזכורת · M = פגישה','כשמסיימים משימה כותבים בקבוצה: ARC-001T בוצע',''];
+  const eli=(map.get('אלירן סבג')||[]);
+  const news=eli.filter(t=>t.kind==='R'&&DATED.test(t.text));
+  if(news.length){L.push('הודעות מאלירן');news.forEach(t=>L.push(line(t)));L.push('');}
+  const meetings=[];
+  for(const name of names){
+    const list=map.get(name).filter(t=>{if(t.kind==='M'){meetings.push(t);return false;}return true;});
+    const body=name==='אלירן סבג'?list.filter(t=>!(t.kind==='R'&&DATED.test(t.text))):list;
+    if(!body.length)continue;
+    L.push(MENTION[name]||('@'+name));
+    if(name==='אלירן סבג'){
+      const tasksT=body.filter(t=>t.kind!=='R'), deals=body.filter(t=>t.kind==='R');
+      tasksT.forEach(t=>L.push(line(t)));
+      if(deals.length){L.push('הסכמים לפני חתימה, כולם קודם לבדיקת עו"ד');deals.forEach(t=>L.push(line(t)));}
+    } else body.forEach(t=>L.push(line(t)));
+    L.push('');
+  }
+  if(meetings.length){meetings.sort((a,b)=>a.num-b.num);L.push('פגישות');meetings.forEach(t=>L.push(line(t)));L.push('');}
+  L.push('הכל מעודכן בדשבורד ובטבלת השליטה והבקרה.');
+  return L.join('\n');
+}
+
+/* ---------- חלונות וכפתורים ---------- */
+function openModal(id){$(id).classList.add('open');}
+function closeModals(){document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'));}
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',(e)=>{if(e.target===m||e.target.closest('[data-close]'))closeModals();}));
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeModals();});
+function openSettings(){ $('inUrl').value=cfg.url||(cfg.id?'https://docs.google.com/spreadsheets/d/'+cfg.id+'/edit'+(cfg.gid?'#gid='+cfg.gid:''):''); $('inTab').value=cfg.tab||DEFAULT_TAB; openModal('mSettings'); setTimeout(()=>$('inUrl').focus(),30); }
+
+$('btnRefresh').addEventListener('click',load);
+$('btnSettings').addEventListener('click',openSettings);
+$('btnSave').addEventListener('click',()=>{
+  const p=parseUrl($('inUrl').value);
+  if(!p.id){toast('הקישור לא נראה כמו קישור לגיליון Google');$('inUrl').focus();return;}
+  cfg={id:p.id,gid:p.gid,tab:($('inTab').value||'').trim()||DEFAULT_TAB,url:$('inUrl').value.trim()};
+  saveCfg(cfg);closeModals();load();
+});
+$('btnOpen').addEventListener('click',()=>{
+  if(!cfg.id){openSettings();return;}
+  window.open('https://docs.google.com/spreadsheets/d/'+cfg.id+'/edit'+(cfg.gid?'#gid='+cfg.gid:''),'_blank','noopener');
+});
+$('btnExport').addEventListener('click',()=>{
+  if(!tasks.length){toast('אין עדיין נתונים. לחצו "ריענון".');return;}
+  $('exportText').value=buildText();openModal('mExport');
+});
+$('btnCopy').addEventListener('click',async()=>{
+  const ta=$('exportText');
+  try{await navigator.clipboard.writeText(ta.value);toast('הועתק ✓');}
+  catch(e){ta.select();try{document.execCommand('copy');toast('הועתק ✓');}catch(e2){toast('ההעתקה נכשלה. סמנו והעתיקו ידנית.');}}
+});
+$('btnDownload').addEventListener('click',()=>{
+  const d=new Date(), name='עדכון משימות '+d.getDate()+'.'+(d.getMonth()+1)+'.'+d.getFullYear()+'.txt';
+  const blob=new Blob(['﻿'+$('exportText').value.replace(/\n/g,'\r\n')],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);toast('הקובץ ירד ✓');
+});
+
+load();
+})();
+</script>
+</body>
+</html>
